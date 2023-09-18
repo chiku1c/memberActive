@@ -4,6 +4,7 @@ import { Button, Grid } from '@mui/material';
 
 function App() {
   const [activeSubmember, setActiveSubmember] = useState([]);
+  console.log(activeSubmember)
   const [activeMemberId, setActiveMemberId] = useState(1); // Initialize active member to 1
 
   const member = [
@@ -12,26 +13,28 @@ function App() {
     { id: 3, key: "C", submember: [{ id: 6, key: "6" }, { id: 7, key: "7" }] }
   ];
 
+console.log(activeSubmember)
 
-  const uniqueIds = new Set();
-
-  const uniqueArray = activeSubmember.filter(obj => {
-    if (!uniqueIds.has(obj.id)) {
-      uniqueIds.add(obj.id);
-      return true;
-    }
-    return false;
-  });
-  
+  const uniqueArray = [...new Set(activeSubmember)]
 
 
 
   const handleClick = (id, submember = []) => {
-    if (activeMemberId === id || activeMemberId === id - 1) {
-      setActiveMemberId(id + 1); // Allow the user to click the next member
-      setActiveSubmember([...activeSubmember, ...submember]);
+    if (submember.some(item => activeSubmember.includes(item?.id))) {
+      for (let i = activeSubmember.length - 1; i >= 0; i--) {
+        if (submember.includes(activeSubmember[i])) {
+          activeSubmember.splice(i, 1);
+        }
+      }
+    } else {
+      const uniqSubId = submember.map((a) => a?.id);
+      // setActiveMemberId(id + 1); // Allow the user to click the next member
+      setActiveSubmember([...activeSubmember, ...uniqSubId]);
     }
   };
+  
+
+
 
   // Function to check if a specific submember key exists in activeSubmember
   const isSubmemberActive = (key) => {
@@ -49,7 +52,7 @@ function App() {
               <Button
                 onClick={() => handleClick(id, submember)}
                 variant="contained"
-                disabled={(id !== activeMemberId && !isSubmemberActive(key)) || (id === 1 && activeMemberId !== 1)}
+              // disabled={id !== 1 && id === 2 || id === 3}
               >
                 {key}
               </Button>
@@ -57,25 +60,24 @@ function App() {
           );
         })}
       </Grid>
-<div>
-      <Grid container>
-        {uniqueArray.map((ele, index) => {
-          const { id, key, } = ele;
+      <div>
+        <Grid container>
+          {activeSubmember.map((ele, index) => {
 
-          return (
-            <Grid item xs={2}  key={index}>
-              <Button
-                // onClick={() => handleClick(id, submember)}
-                variant="contained"
-                disabled={(id !== activeMemberId && !isSubmemberActive(key)) || (id === 1 && activeMemberId !== 1)}
-              >
-                {key}
-              </Button>
-            </Grid>
-          );
-        })}
-      </Grid>
-</div>
+            return (
+              <Grid item xs={2} key={index}>
+                <Button
+                  // onClick={() => handleClick(id, submember)}
+                  variant="contained"
+                // disabled={(id !== activeMemberId && !isSubmemberActive(key)) || (id === 1 && activeMemberId !== 1)}
+                >
+                  {ele}
+                </Button>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </div>
 
     </div>
   );
