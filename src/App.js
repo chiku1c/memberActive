@@ -4,7 +4,6 @@ import { Button, Grid } from '@mui/material';
 
 function App() {
   const [activeSubmember, setActiveSubmember] = useState([]);
-  console.log(activeSubmember)
   const [activeMemberId, setActiveMemberId] = useState(1); // Initialize active member to 1
 
   const member = [
@@ -13,25 +12,71 @@ function App() {
     { id: 3, key: "C", submember: [{ id: 6, key: "6" }, { id: 7, key: "7" }] }
   ];
 
-console.log(activeSubmember)
 
   const uniqueArray = [...new Set(activeSubmember)]
 
+console.log(uniqueArray)
+
+  // const handleClick = (id, submember = []) => {
+  //   if (submember.some(item => activeSubmember.includes(item?.id))) {
+  //     for (let i = activeSubmember.length - 1; i >= 0; i--) {
+  //       if (submember.some(item => item.id === activeSubmember[i])) {
+  //         activeSubmember.splice(i, 1);
+  //       }
+  //     }
+  //   } else {
+  //     const uniqSubId = submember.map((a) => a?.id);
+  //     if (activeSubmember.length >4) {
+  //       // Remove the oldest member
+  //       activeSubmember.shift();
+  //     }
+  //     setActiveSubmember([...activeSubmember, ...uniqSubId]);
+  //   }
+  // };
 
 
+  // const handleClick = (id, submember = []) => {
+  //   const uniqSubId = submember.map((a) => a?.id);
+  
+  //   // Check if adding this submember would exceed the limit of 4
+  //   if (activeSubmember.length  <= 4) {
+  //     // Add the new submember
+  //     setActiveSubmember([...activeSubmember, ...uniqSubId]);
+  //   } else {
+  //     // Calculate how many members need to be removed to make space for the new submember
+  //     const removeCount = activeSubmember.length + uniqSubId.length - 4;
+  
+  //     // Remove the oldest members to make space for the new submember
+  //     setActiveSubmember((prevActiveSubmember) =>
+  //       prevActiveSubmember.slice(removeCount).concat(uniqSubId)
+  //     );
+  //   }
+  // };
+  
+  
   const handleClick = (id, submember = []) => {
-    if (submember.some(item => activeSubmember.includes(item?.id))) {
-      for (let i = activeSubmember.length - 1; i >= 0; i--) {
-        if (submember.includes(activeSubmember[i])) {
-          activeSubmember.splice(i, 1);
-        }
-      }
-    } else {
-      const uniqSubId = submember.map((a) => a?.id);
-      // setActiveMemberId(id + 1); // Allow the user to click the next member
+    const uniqSubId = submember.map((a) => a?.id);
+  
+    // Calculate how many members can be added without exceeding the limit
+    const spaceLeft = 4 - activeSubmember.length;
+  
+    if (uniqSubId.length <= spaceLeft) {
+      // Add all the new submembers because there's enough space
       setActiveSubmember([...activeSubmember, ...uniqSubId]);
+    } else {
+      // Add as many new submembers as there is space
+      const newSubmembers = uniqSubId.slice(0, spaceLeft);
+  
+      // Calculate how many old submembers need to be removed
+      const removeCount = uniqSubId.length - spaceLeft;
+  
+      // Remove the oldest submembers and add the new ones
+      setActiveSubmember((prevActiveSubmember) =>
+        prevActiveSubmember.slice(removeCount).concat(newSubmembers)
+      );
     }
   };
+  
   
 
 
@@ -62,7 +107,7 @@ console.log(activeSubmember)
       </Grid>
       <div>
         <Grid container>
-          {activeSubmember.map((ele, index) => {
+          {uniqueArray.map((ele, index) => {
 
             return (
               <Grid item xs={2} key={index}>
